@@ -6,17 +6,15 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kata.spring.boot_security.demo.model.User;
 import ru.kata.spring.boot_security.demo.service.UserDetailsServiceImpl;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
-;
-
-
 
 
 @Controller
+@RequestMapping("/user")
 public class UserController {
 
     private UserDetailsServiceImpl userDetailsServiceImpl;
@@ -29,18 +27,13 @@ public class UserController {
         this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
 
-    @GetMapping("/user")
+
+    @GetMapping()
     public String getUserInfo(@AuthenticationPrincipal UserDetails userDetails,
                               Model model){
         String username = userDetails.getUsername();
         User user = userServiceImpl.findByUsername(username);
         model.addAttribute("user", user);
-        return "/user";
-    }
-
-    @GetMapping("/user/{id}")
-    public String showCurrentUser(@PathVariable("id") long id, Model model) {
-        model.addAttribute("user",userServiceImpl.showById(id));
-        return "/user";
+        return "user";
     }
 }

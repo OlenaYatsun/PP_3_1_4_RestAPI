@@ -17,8 +17,6 @@ public interface UserService{
 
     void delete(Long id);
 
-    //User findByName(String name);
-
     User findByUsername(String username);
 
     User setRolesToUser(User user, int[] rolesIdArr);

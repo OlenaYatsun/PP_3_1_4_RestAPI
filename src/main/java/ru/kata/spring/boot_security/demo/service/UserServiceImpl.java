@@ -58,7 +58,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     @Transactional
     public void delete(Long id) {
@@ -71,12 +70,6 @@ public class UserServiceImpl implements UserService {
         return userDAO.findByUsername(username);
     }
 
-    /*@Override
-    public User findByName(String name) {
-        return showUsers().stream().filter(s -> s.getName().equals(name)).findFirst().get();
-    }
-
-     */
 
     @Override
     public User setRolesToUser(User user, int[] rolesIdArr) {

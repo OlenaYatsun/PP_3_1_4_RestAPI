@@ -1,11 +1,9 @@
 package ru.kata.spring.boot_security.demo.model;
 
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -31,8 +29,8 @@ public class User implements UserDetails {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "users_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id"))
+            joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
 
 
@@ -49,13 +47,15 @@ public class User implements UserDetails {
         return Collections.singletonList(roles.toString());
     }
 
-    public String toStringRole() {
+   /* public String toStringRole() {
         StringBuilder builder = new StringBuilder();
         for (Role role : roles) {
             builder.append(role.getRoleName()).append(" ");
         }
         return builder.toString().trim().substring(5);
     }
+
+    */
 
     public User(){}
 
@@ -109,23 +109,13 @@ public class User implements UserDetails {
     }
 
 
-   /* @Override
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         //return roles.stream().map(r -> new SimpleGrantedAuthority(r.getAuthority())).collect(Collectors.toList());
         return getRoles();
     }
 
-    */
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (Role role : roles) {
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName());
-            authorities.add(authority);
-        }
-        return authorities;
-    }
 
     public void setPassword(String password) {
         this.password = password;
@@ -135,7 +125,6 @@ public class User implements UserDetails {
     public String getPassword() {
         return password;
     }
-
 
 
     @Override
