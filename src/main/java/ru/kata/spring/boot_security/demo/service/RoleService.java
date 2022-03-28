@@ -11,4 +11,6 @@ public interface RoleService {
     void update( Role updatedRole);
     void delete(int id);
     List<Role> getDemandedRoles();
+
+
 }

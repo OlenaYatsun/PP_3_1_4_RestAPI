@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.filter.HiddenHttpMethodFilter;
 import ru.kata.spring.boot_security.demo.service.UserDetailsServiceImpl;
 
 @Configuration
@@ -34,9 +33,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
                 .antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
+                .and().httpBasic()
                 .and()
                 .formLogin()
-                //.loginPage("/login")
                 .successHandler(successUserHandler)
                 .permitAll()
                 .and()
@@ -44,7 +43,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutUrl("/logout")
                 .logoutSuccessUrl("/login")
                 .and().csrf().disable();
+
+
     }
+
 
   @Bean
   protected DaoAuthenticationProvider daoAuthenticationProvider() {

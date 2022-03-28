@@ -5,9 +5,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name="users")
@@ -27,7 +28,8 @@ public class User implements UserDetails {
 
     private String username;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(name = "users_roles",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -41,6 +43,18 @@ public class User implements UserDetails {
         this.age = age;
         this.password = password;
         this.roles = roles;
+    }
+
+    public List<String> getStringRoles() {
+        return Collections.singletonList(roles.toString());
+    }
+
+    public String toStringRole() {
+        StringBuilder builder = new StringBuilder();
+        for (Role role : roles) {
+            builder.append(role.getRoleName()).append(" ");
+        }
+        return builder.toString().trim().substring(5);
     }
 
     public User(){}
@@ -86,7 +100,7 @@ public class User implements UserDetails {
         this.username = email;
     }
 
-    public Collection<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
@@ -95,12 +109,23 @@ public class User implements UserDetails {
     }
 
 
-    @Override
+   /* @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         //return roles.stream().map(r -> new SimpleGrantedAuthority(r.getAuthority())).collect(Collectors.toList());
         return getRoles();
     }
 
+    */
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roles) {
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.getRoleName());
+            authorities.add(authority);
+        }
+        return authorities;
+    }
 
     public void setPassword(String password) {
         this.password = password;

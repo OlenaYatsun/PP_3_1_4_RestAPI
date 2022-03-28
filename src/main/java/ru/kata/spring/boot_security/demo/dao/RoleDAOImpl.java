@@ -7,9 +7,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
 
-import static org.hibernate.FetchMode.JOIN;
-import static org.hibernate.hql.internal.antlr.HqlTokenTypes.FETCH;
-
 @Repository
 public class RoleDAOImpl implements RoleDAO {
 
