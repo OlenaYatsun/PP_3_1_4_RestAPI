@@ -1,39 +1,31 @@
 package ru.kata.spring.boot_security.demo.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.UserDetailsServiceImpl;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 
-
 @Controller
-@RequestMapping("/user")
 public class UserController {
 
-    private UserDetailsServiceImpl userDetailsServiceImpl;
-    private UserService userServiceImpl;
-
+    private UserService userService;
 
     @Autowired
-    public UserController(UserService userServiceImpl,UserDetailsServiceImpl userDetailsServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
-        this.userDetailsServiceImpl = userDetailsServiceImpl;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
 
     @GetMapping()
-    public String getUserInfo(@AuthenticationPrincipal UserDetails userDetails,
-                              Model model){
-        String username = userDetails.getUsername();
-        User user = userServiceImpl.findByUsername(username);
-        model.addAttribute("user", user);
-        return "user";
+    public String getCurrentUser(Authentication authentication, ModelMap model) {
+        model.addAttribute("user", authentication.getPrincipal());
+        model.addAttribute("userRoles", authentication.getAuthorities());
+        return "admin";
     }
+
+
+
 }

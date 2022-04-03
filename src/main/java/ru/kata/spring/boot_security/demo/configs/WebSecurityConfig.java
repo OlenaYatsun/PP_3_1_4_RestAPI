@@ -4,22 +4,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.service.UserDetailsServiceImpl;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final SuccessUserHandler successUserHandler;
     private UserDetailsServiceImpl userDetailsServiceImpl;
+    private final UserService userService;
 
     @Autowired
-    public WebSecurityConfig(SuccessUserHandler successUserHandler, UserDetailsServiceImpl userDetailsServiceImpl) {
+    public WebSecurityConfig(UserService userService, SuccessUserHandler successUserHandler, UserDetailsServiceImpl userDetailsServiceImpl) {
+        this.userService = userService;
         this.successUserHandler = successUserHandler;
         this.userDetailsServiceImpl = userDetailsServiceImpl;
     }
@@ -28,22 +34,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .authorizeRequests()
-                //.antMatchers("/").permitAll()
-                .antMatchers("/user/**").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
-                .antMatchers("/admin/**").access("hasRole('ROLE_ADMIN')")
-                .antMatchers("/login").permitAll()
+                .antMatchers("/").authenticated()
+                //.antMatchers("/").access("hasAnyRole('ROLE_USER', 'ROLE_ADMIN')")
+                //.antMatchers("/login").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .successHandler(successUserHandler)
+                .formLogin().successHandler(successUserHandler)
                 .permitAll()
                 .and()
                 .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/login")
+                .permitAll()
                 .and().csrf().disable();
-
-
     }
 
 
@@ -54,6 +55,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
       daoAuthenticationProvider.setUserDetailsService(userDetailsServiceImpl);
       return daoAuthenticationProvider;
   }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username ->
+                userService.findByUsername(username);
+    }
 
     @Bean
     public PasswordEncoder passwordEncoder() {
