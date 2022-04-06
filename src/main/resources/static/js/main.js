@@ -42,7 +42,7 @@ const renderUsers = (users) => {
         let roleName = '';
         roles.forEach(
             role => {
-                r = role.name;
+                r = role.roleName.substring(5);
                 roleName += r + ' ';
             }
         );
@@ -67,7 +67,7 @@ const renderRoles = (roles) => {
     rolesOptions = '';
     roles.forEach(role => {
         rolesOptions += `
-            <option value = ${role.id}>${role.name}</option>
+            <option value = ${role.id}>${role.roleName.substring(5)}</option>
             `
         rolesArr.push(role);
     })
@@ -109,7 +109,7 @@ const on = (element, event, selector, handler) => {
     })
 }
 
-// DELETE user
+// Удаление
 
 on(document, 'click', '.btnDelete', e => {
     const row = e.target.parentNode.parentNode;
@@ -126,7 +126,7 @@ on(document, 'click', '.btnDelete', e => {
     deleteUserModal.show();
 })
 
-// EDIT user
+// Изменение
 
 let idForm = 0;
 on(document, 'click', '.btnEdit', e => {
@@ -147,7 +147,7 @@ on(document, 'click', '.btnEdit', e => {
 
 })
 
-// NEW USER TAB BUTTON
+// Новый пользователь таб
 
 btnCreate.addEventListener('click', () => {
     newName.value = ''
@@ -158,7 +158,7 @@ btnCreate.addEventListener('click', () => {
 });
 
 
-// DELETE SUBMIT
+// Удаление сабмит
 
 deleteUserForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -174,7 +174,7 @@ deleteUserForm.addEventListener('submit', (e) => {
     deleteUserModal.hide();
 });
 
-// CREATE NEW USER SUBMIT
+// Новый пользователь сабмит
 
 newUserForm.addEventListener('submit', (e) => {
     let rolesJ = [];
@@ -188,6 +188,7 @@ newUserForm.addEventListener('submit', (e) => {
             rolesJ.push(rolesArr[role - 1])
         }
     );
+
 
     const fetchFunction = async () => {
         const fetchedData = await
@@ -228,7 +229,7 @@ newUserForm.addEventListener('submit', (e) => {
 
 })
 
-// EDIT USER SUBMIT
+// Изменение сабмит
 
 editUserForm.addEventListener('submit', (e) => {
     let rolesJ = [];
@@ -242,6 +243,8 @@ editUserForm.addEventListener('submit', (e) => {
             rolesJ.push(rolesArr[role - 1])
         }
     );
+
+
 
     const fetchFunction = async () => {
         const fetchedData = await fetch(url + idForm, {
